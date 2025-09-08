@@ -144,6 +144,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', verbose_name='Заказ')
     product = models.ForeignKey('Product', on_delete=models.CASCADE, verbose_name='Товар')
     quantity = models.PositiveIntegerField('Количество')
+    price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='стоимость', blank=True,)
 
     def __str__(self):
         return f'{self.product.name} × {self.quantity}'
