@@ -143,9 +143,16 @@ class OrderQuerySet(models.QuerySet):
 
 
 class Order(models.Model):
+    ORDER_STATUS = [
+        ('accepted', 'Принят'),
+        ('in_progress', 'В сборке'),
+        ('in_delivery', 'В доставке'),
+        ('completed', 'Выполнен'),
+    ]
     firstname = models.CharField('Имя', max_length=50)
     lastname = models.CharField('Фамилия', max_length=50)
     phonenumber = PhoneNumberField('Телефон', db_index=True)
+    status = models.CharField(max_length=50, choices=ORDER_STATUS, db_index=True, default='accepted', verbose_name='Статус')
     address = models.TextField('Адрес доставки')
     created_at = models.DateTimeField('Создан', auto_now_add=True)
 
