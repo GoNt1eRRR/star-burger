@@ -153,6 +153,7 @@ class Order(models.Model):
     lastname = models.CharField('Фамилия', max_length=50)
     phonenumber = PhoneNumberField('Телефон', db_index=True)
     status = models.CharField(max_length=50, choices=ORDER_STATUS, db_index=True, default='accepted', verbose_name='Статус')
+    comment = models.TextField(blank=True, verbose_name='Комментарий')
     address = models.TextField('Адрес доставки')
     created_at = models.DateTimeField('Создан', auto_now_add=True)
 
