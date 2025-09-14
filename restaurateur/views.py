@@ -1,14 +1,16 @@
 from django import forms
-from django.shortcuts import redirect, render, get_list_or_404
+from django.shortcuts import redirect, render
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
+from geopy.distance import geodesic
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 
 
-from foodcartapp.models import Product, Restaurant, Order
+from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
+from geocoordapp.models import Place
 
 
 class Login(forms.Form):
@@ -93,4 +95,61 @@ def view_restaurants(request):
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
     orders = Order.objects.total_price().filter(status='accepted')
-    return render(request, template_name='order_items.html', context={'order_items': orders})
+    orders_in_progress = Order.objects.total_price().filter(status='in_progress')
+    orders_in_delivery = Order.objects.total_price().filter(status='in_delivery')
+
+    items_of_restaurants = RestaurantMenuItem.objects.filter(availability=True)
+    restaurants = Restaurant.objects.all()
+
+    for order in orders:
+        order.free_restaurants = []
+        free_restaurants = []
+
+        for item in order.items.all():
+            item.free_restaurants = []
+            for restaurant_item in items_of_restaurants:
+                if item.product_id == restaurant_item.product_id:
+                    item.free_restaurants.append(restaurant_item.restaurant_id)
+            free_restaurants.append(item.free_restaurants)
+
+        if free_restaurants:
+            common_restaurants = set(free_restaurants[0])
+            for free_restaurant in free_restaurants[1:]:
+                common_restaurants &= set(free_restaurant)
+            common_restaurants = list(common_restaurants)
+
+            for common_restaurant in common_restaurants:
+                for restaurant in restaurants:
+                    if common_restaurant == restaurant.id:
+
+                        order_place = Place.objects.filter(address=order.address).first()
+                        if order_place is None or order_place.lat is None or order_place.lon is None:
+                            distance = 'расстояние не определено, '
+                            order.free_restaurants.append({restaurant.name: distance})
+                            break
+                        else:
+                            order_address_lon = order_place.lon
+                            order_address_lat = order_place.lat
+
+                        restaurant_place = Place.objects.filter(address=restaurant.address).first()
+                        if restaurant_place is None or restaurant_place.lat is None or restaurant_place.lon is None:
+                            distance = 'расстояние не определено, '
+                            order.free_restaurants.append({restaurant.name: distance})
+                            break
+                        else:
+                            restaurant_address_lon = restaurant_place.lon
+                            restaurant_address_lat = restaurant_place.lat
+
+                        distance = round(geodesic((order_address_lat, order_address_lon),
+                                                  (restaurant_address_lat, restaurant_address_lon)).km, 2)
+
+                        order.free_restaurants.append({restaurant.name: distance})
+                        break
+
+        order.free_restaurants = sorted(order.free_restaurants, key=lambda x: (
+            0, list(x.values())[0]) if isinstance(list(x.values())[0], (int, float)) else (
+            1, str(list(x.values())[0])))
+
+    return render(request, template_name='order_items.html',
+                  context={'order_items': orders, 'order_in_progress': orders_in_progress,
+                           'order_in_delivery': orders_in_delivery})

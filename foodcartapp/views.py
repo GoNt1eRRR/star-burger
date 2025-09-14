@@ -1,11 +1,14 @@
+from requests import RequestException
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.conf import settings
 from django.db import transaction
 
-
+from geocoordapp.models import Place
+from restaurateur.auxiliary_funcs import fetch_coordinates
 from .serializers import OrderSerializer
 from .models import Product
 
@@ -68,6 +71,13 @@ def register_order(request):
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     order = serializer.save()
+
+    if not Place.objects.filter(address=order.address).first():
+        try:
+            lat, lon = fetch_coordinates(settings.YANDEX_TOKEN, order.address)
+        except (RequestException, TypeError):
+            lat, lon = None, None
+        Place.objects.create(address=order.address, lat=lat, lon=lon)
 
     response_serializer = OrderSerializer(order)
     return Response(response_serializer.data, status=status.HTTP_201_CREATED)

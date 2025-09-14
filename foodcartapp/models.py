@@ -164,6 +164,7 @@ class Order(models.Model):
     payment_method = models.CharField(max_length=30, choices=PAYMENT_METHOD, db_index=True, verbose_name='Способ оплаты')
     address = models.TextField('Адрес доставки')
     created_at = models.DateTimeField('Создан', auto_now_add=True)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='orders', verbose_name='Ресторан', blank=True, null=True)
 
     def __str__(self):
         return f'Заказ №{self.id} — {self.firstname} {self.lastname}'
