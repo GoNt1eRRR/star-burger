@@ -154,6 +154,9 @@ class Order(models.Model):
     phonenumber = PhoneNumberField('Телефон', db_index=True)
     status = models.CharField(max_length=50, choices=ORDER_STATUS, db_index=True, default='accepted', verbose_name='Статус')
     comment = models.TextField(blank=True, verbose_name='Комментарий')
+    registered_at = models.DateTimeField(blank=True, verbose_name='Время регистрации', db_index=True)
+    called_at = models.DateTimeField(blank=True, null=True, verbose_name='Время звонка', db_index=True)
+    delivered_at = models.DateTimeField(blank=True, null=True, verbose_name='Время доставки', db_index=True)
     address = models.TextField('Адрес доставки')
     created_at = models.DateTimeField('Создан', auto_now_add=True)
 
