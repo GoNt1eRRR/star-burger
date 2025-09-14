@@ -149,6 +149,10 @@ class Order(models.Model):
         ('in_delivery', 'В доставке'),
         ('completed', 'Выполнен'),
     ]
+    PAYMENT_METHOD = [
+        ('cash', 'Наличными'),
+        ('online', 'Электронно'),
+    ]
     firstname = models.CharField('Имя', max_length=50)
     lastname = models.CharField('Фамилия', max_length=50)
     phonenumber = PhoneNumberField('Телефон', db_index=True)
@@ -157,6 +161,7 @@ class Order(models.Model):
     registered_at = models.DateTimeField(blank=True, verbose_name='Время регистрации', db_index=True)
     called_at = models.DateTimeField(blank=True, null=True, verbose_name='Время звонка', db_index=True)
     delivered_at = models.DateTimeField(blank=True, null=True, verbose_name='Время доставки', db_index=True)
+    payment_method = models.CharField(max_length=30, choices=PAYMENT_METHOD, db_index=True, verbose_name='Способ оплаты')
     address = models.TextField('Адрес доставки')
     created_at = models.DateTimeField('Создан', auto_now_add=True)
 
