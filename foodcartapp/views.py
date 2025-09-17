@@ -73,10 +73,8 @@ def register_order(request):
     order = serializer.save()
 
     if not Place.objects.filter(address=order.address).first():
-        try:
-            lat, lon = fetch_coordinates(settings.YANDEX_TOKEN, order.address)
-        except (RequestException, TypeError):
-            lat, lon = None, None
+        coords = fetch_coordinates(settings.YANDEX_TOKEN, order.address)
+        lat, lon = coords if coords else (None, None)
         Place.objects.create(address=order.address, lat=lat, lon=lon)
 
     response_serializer = OrderSerializer(order)
