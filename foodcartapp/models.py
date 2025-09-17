@@ -180,7 +180,7 @@ class Order(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', verbose_name='Заказ')
     product = models.ForeignKey('Product', on_delete=models.CASCADE, verbose_name='Товар')
-    quantity = models.PositiveIntegerField('Количество')
+    quantity = models.PositiveIntegerField('Количество', validators=[MinValueValidator(1)])
     price = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(1)], verbose_name='стоимость', blank=True,)
 
     def __str__(self):
