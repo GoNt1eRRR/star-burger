@@ -58,8 +58,11 @@ pip install -r requirements.txt
 ```sh
 SECRET_KEY=django-insecure-0if40nf4nf93n4
 YANDEX_TOKEN=
+ROLLBAR_TOKEN=
 ```
 YANDEX_TOKEN - получите API ключ в [кабинете разработчика](https://developer.tech.yandex.ru/services).
+
+ROLLBAR_TOKEN - получите на сайте [Rollbar](https://app.rollbar.com/)
 
 Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
 
