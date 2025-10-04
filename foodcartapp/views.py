@@ -79,3 +79,8 @@ def register_order(request):
 
     response_serializer = OrderSerializer(order)
     return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+
+def test_rollbar(request):
+    1/0
+    return HttpResponse("This won't be shown")

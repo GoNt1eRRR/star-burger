@@ -1,7 +1,8 @@
 import os
 
 import dj_database_url
-
+import rollbar
+import rollbar.contrib.django.middleware as rollbar_middleware
 from environs import Env
 
 
@@ -33,6 +34,13 @@ INSTALLED_APPS = [
     'geocoordapp'
 ]
 
+ROLLBAR = {
+    'access_token': env('ROLLBAR_TOKEN'),
+    'environment': env('ROLLBAR_ENV', 'production'),
+    'code_version': '1.0',
+    'root': BASE_DIR,
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -42,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 ]
 
 ROOT_URLCONF = 'star_burger.urls'
@@ -121,6 +130,7 @@ INTERNAL_IPS = [
     '127.0.0.1'
 ]
 
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "assets"),
