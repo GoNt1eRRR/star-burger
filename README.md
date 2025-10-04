@@ -61,11 +61,11 @@ YANDEX_TOKEN=
 ROLLBAR_TOKEN=
 DATABASE_URL=
 ```
-YANDEX_TOKEN - получите API ключ в [кабинете разработчика](https://developer.tech.yandex.ru/services).
+`YANDEX_TOKEN` - получите API ключ в [кабинете разработчика](https://developer.tech.yandex.ru/services).
 
-DATABASE_URL - подключение к БД. Схема postgres://USER:PASSWORD@HOST:PORT/NAME
+`DATABASE_URL` - подключение к БД. Схема `postgres://USER:PASSWORD@HOST:PORT/NAME`
 
-ROLLBAR_TOKEN - получите на сайте [Rollbar](https://app.rollbar.com/)
+`ROLLBAR_TOKEN` - получите на сайте [Rollbar](https://app.rollbar.com/)
 
 Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
 
